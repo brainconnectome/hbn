@@ -121,7 +121,7 @@ do
    ITK_GLOBAL_DEFAULT_NUMBER_OF_THREADS=$nthreads
    echo NOW WARPING FOR SUBJECT ${s}
    SUBJECT=${s}_1mm_flair
-    cd /ifs/scratch/pimri/posnerlab/1anal/IDP/fs/\${SUBJECT}/dmri2
+   cd /ifs/scratch/pimri/posnerlab/1anal/adni/fs/\${SUBJECT}/dmri2
 #### tckgen
 #rm -rf mr_track_10M_SIFT2.tck
 
