@@ -70,15 +70,42 @@ sleep 0.2
 mrresize T1_2diff_flt.nii.gz -scale 2.0 -force T1_2diff_flt_upsample.nii.gz -nthreads $nthreads
 sleep 0.2
 
-5ttgen fsl T1_2diff_flt_upsample.nii.gz 5tt2_upsample.mif.gz -force -nthreads $nthreads
+###################################################################
+5ttgen fsl T1_flip.nii.gz 5tt_flip.mif.gz -force -nthreads $nthreads
 sleep 0.2
 
-mrresize 5tt2_upsample.mif.gz -scale 0.5 -force 5tt2.nii.gz -interp nearest -nthreads $nthreads
+mrconvert 5tt_flip.mif.gz 5tt_flip.nii.gz -nthreads $nthreads
+sleep 0.2 
+
+fslroi 5tt_flip.nii.gz 5tt_flip_1 0 1
 sleep 0.2
+
+flirt -ref mr_meanb0.nii.gz -in 5tt_flip_1.nii.gz -omat anatfov2diff.mat -o brain_anatfov2diff.nii.gz
+sleep 0.2
+
+fslsplit 5tt_flip.nii.gz tmp
+sleep 0.2
+
+for im in 0 1 2 3 4; do
+flirt -in tmp000${im} -ref mr_meanb0.nii.gz -o 5tt_flip2diff_${im} -applyxfm -init anatfov2diff.mat -interp nearestneighbour
+done
+
+fslmerge -t 5tt_flip2diff 5tt_flip2diff_0 5tt_flip2diff_1 5tt_flip2diff_2 5tt_flip2diff_3 5tt_flip2diff_4
+sleep 0.2
+
+cp 5tt_flip2diff.nii.gz 5tt2.nii.gz
+cp 5tt_flip2diff.mif.gz 5tt2.mif.gz
+###################################################################
+
+#5ttgen fsl T1_2diff_flt_upsample.nii.gz 5tt2_upsample.mif.gz -force -nthreads $nthreads
+#sleep 0.2
+
+#mrresize 5tt2_upsample.mif.gz -scale 0.5 -force 5tt2.nii.gz -interp nearest -nthreads $nthreads
+#sleep 0.2
 #5ttgen fsl T1_2diff_flt.nii.gz 5tt2.mif.gz -force -nthreads $nthreads
 
-mrconvert 5tt2.mif.gz 5tt2.nii.gz -force
-sleep 0.2
+#mrconvert 5tt2.mif.gz 5tt2.nii.gz -force
+#sleep 0.2
 
 5tt2gmwmi 5tt2.mif.gz 5tt2_gmwmi_mask.mif.gz -nthreads $nthreads -force
 sleep 0.2
