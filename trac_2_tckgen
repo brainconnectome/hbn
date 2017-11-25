@@ -24,7 +24,8 @@ rm -rf $CMD2_batch
 #nthreadsX2=$((${nthreads}*2))
 
 
-subjectlist=/ifs/scratch/pimri/posnerlab/1anal/adni/data/nii/list_dti
+#subjectlist=/ifs/scratch/pimri/posnerlab/1anal/adni/data/nii/list_dti
+subjectlist=/ifs/scratch/pimri/posnerlab/1anal/adni/fs/list_fail01
 for s in `cat $subjectlist`
 do
 
@@ -70,32 +71,41 @@ sleep 0.2
 mrresize T1_2diff_flt.nii.gz -scale 2.0 -force T1_2diff_flt_upsample.nii.gz -nthreads $nthreads
 sleep 0.2
 
-###################################################################
-5ttgen fsl T1_flip.nii.gz 5tt_flip.mif.gz -force -nthreads $nthreads
-sleep 0.2
+###########OPTON1-5TTGEN WITH HIGH RES ANATOMICAL########################################################
+#5ttgen fsl T1_flip.nii.gz 5tt_flip.mif.gz -force -nthreads $nthreads
+#sleep 0.2
 
-mrconvert 5tt_flip.mif.gz 5tt_flip.nii.gz -nthreads $nthreads
-sleep 0.2 
+#mrconvert 5tt_flip.mif.gz 5tt_flip.nii.gz -nthreads $nthreads
+#sleep 0.2 
 
-fslroi 5tt_flip.nii.gz 5tt_flip_1 0 1
-sleep 0.2
+#fslroi 5tt_flip.nii.gz 5tt_flip_1 0 1
+#sleep 0.2
 
-flirt -ref mr_meanb0.nii.gz -in 5tt_flip_1.nii.gz -omat anatfov2diff.mat -o brain_anatfov2diff.nii.gz
-sleep 0.2
+#bet2 5tt_flip_1 5tt_flip_1_bet
 
-fslsplit 5tt_flip.nii.gz tmp
-sleep 0.2
+#bet2 mr_meanb0 mr_meanb0_bet
 
-for im in 0 1 2 3 4; do
-flirt -in tmp000\${im} -ref mr_meanb0.nii.gz -o 5tt_flip2diff_\${im} -applyxfm -init anatfov2diff.mat -interp nearestneighbour
-done
+#flirt -ref mr_meanb0.nii.gz -in 5tt_flip_1.nii.gz -omat anatfov2diff.mat -o brain_anatfov2diff.nii.gz
+#sleep 0.2
 
-fslmerge -t 5tt_flip2diff 5tt_flip2diff_0 5tt_flip2diff_1 5tt_flip2diff_2 5tt_flip2diff_3 5tt_flip2diff_4
-sleep 0.2
+#fslsplit 5tt_flip.nii.gz tmp
+#sleep 0.2
 
-cp 5tt_flip2diff.nii.gz 5tt2.nii.gz
-cp 5tt_flip2diff.mif.gz 5tt2.mif.gz
-###################################################################
+#for im in 0 1 2 3 4; do
+#flirt -in tmp000\${im} -ref mr_meanb0.nii.gz -o 5tt_flip2diff_\${im} -applyxfm -init anatfov2diff.mat -interp nearestneighbour
+#done
+
+#fslmerge -t 5tt_flip2diff 5tt_flip2diff_0 5tt_flip2diff_1 5tt_flip2diff_2 5tt_flip2diff_3 5tt_flip2diff_4
+#sleep 0.2
+
+#cp 5tt_flip2diff.nii.gz 5tt2.nii.gz
+#sleep 0.2
+
+#mrconvert 5tt_flip2diff.nii.gz 5tt2.mif.gz -force
+#sleep 0.2
+
+#5tt2gmwmi 5tt2.mif.gz -force 5tt2_gmwmi_mask.mif.gz -nthreads $nthreads
+#sleep 0.2
 
 #5ttgen fsl T1_2diff_flt_upsample.nii.gz 5tt2_upsample.mif.gz -force -nthreads $nthreads
 #sleep 0.2
@@ -107,8 +117,46 @@ cp 5tt_flip2diff.mif.gz 5tt2.mif.gz
 #mrconvert 5tt2.mif.gz 5tt2.nii.gz -force
 #sleep 0.2
 
-5tt2gmwmi 5tt2.mif.gz 5tt2_gmwmi_mask.mif.gz -nthreads $nthreads -force
+
+################OPTION2-5TTGEN WITH FREESURFER??????#######################################@@##########################################
+
+5ttgen freesurfer aparc+aseg_flip.nii.gz 5tt_aparc+aseg_flip.nii.gz -force
 sleep 0.2
+
+bet2 mr_meanb0 mr_meanb0_brain
+sleep 0.2
+
+fsl_reg 5tt_aparc+aseg_flip mr_meanb0_brain 5tt2diff -a -flirt "-interp nearestneighbour"
+sleep 0.2
+
+mrconvert 5tt2diff.nii.gz 5tt2diff.mif.gz -force
+sleep 0.2
+
+cp 5tt2diff.mif.gz 5tt2.mif.gz
+sleep 0.2
+
+cp 5tt2diff.nii.gz 5tt2.nii.gz
+sleep 0.2
+
+5tt2gmwmi 5tt2.mif.gz -force 5tt2_gmwmi_mask.mif.gz -nthreads $nthreads
+sleep 0.2
+
+#############################################################################################
+
+
+######################################OPTION 3: 5TTGEN-FSL WITH -NOCROP AND -PREMASK OPTION
+5ttgen fsl brain_anat.nii.gz 5tt_from_brain_anat_test.nii.gz -nocrop -premasked 
+sleep 0.2
+
+mrinfo brain_anat.nii.gz
+mrinfo 5tt_from_brain_anat_test.nii.gz
+
+
+
+
+
+
+
 
 ### APARC+ASEG to diff
 for im in aparc+aseg aparc.a2009s+aseg
