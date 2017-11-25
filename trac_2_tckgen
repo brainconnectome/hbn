@@ -87,7 +87,7 @@ fslsplit 5tt_flip.nii.gz tmp
 sleep 0.2
 
 for im in 0 1 2 3 4; do
-flirt -in tmp000${im} -ref mr_meanb0.nii.gz -o 5tt_flip2diff_${im} -applyxfm -init anatfov2diff.mat -interp nearestneighbour
+flirt -in tmp000\${im} -ref mr_meanb0.nii.gz -o 5tt_flip2diff_\${im} -applyxfm -init anatfov2diff.mat -interp nearestneighbour
 done
 
 fslmerge -t 5tt_flip2diff 5tt_flip2diff_0 5tt_flip2diff_1 5tt_flip2diff_2 5tt_flip2diff_3 5tt_flip2diff_4
