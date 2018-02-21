@@ -1,5 +1,19 @@
 #!/bin/bash
 
+
+
+####################################
+cat R1/MRI/RU/sub-NDARMF116AFR/dwi/sub-NDARMF116AFR_acq-64DIRECTIONSAP_dwi.json | grep TotalReadoutTime | grep -o '[0].[0-9]*'
+dwipreproc sub-NDARPL721WTD_acq-64DIRECTIONSAP_dwi.nii.gz dwi_preprocessed2.mif.gz \
+-json_import sub-NDARPL721WTD_acq-64DIRECTIONSAP_dwi.json \
+-se_epi b0s.mif.gz \
+-pe_dir AP \
+-rpe_pair \
+-readout_time 0.0691181 \
+-fslgrad sub-NDARPL721WTD_acq-64DIRECTIONSAP_dwi.bvec sub-NDARPL721WTD_acq-64DIRECTIONSAP_dwi.bval \
+-eddy_options " --repol "
+
+####################################
 list=$1
 threads=6
 #threadsX2=$((${threads}*2))
