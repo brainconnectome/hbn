@@ -2,7 +2,7 @@
 
 
 
-####################################
+##1##################################
 cat R1/MRI/RU/sub-NDARMF116AFR/dwi/sub-NDARMF116AFR_acq-64DIRECTIONSAP_dwi.json | grep TotalReadoutTime | grep -o '[0].[0-9]*'
 dwipreproc sub-NDARPL721WTD_acq-64DIRECTIONSAP_dwi.nii.gz dwi_preprocessed2.mif.gz \
 -json_import sub-NDARPL721WTD_acq-64DIRECTIONSAP_dwi.json \
@@ -13,6 +13,12 @@ dwipreproc sub-NDARPL721WTD_acq-64DIRECTIONSAP_dwi.nii.gz dwi_preprocessed2.mif.
 -fslgrad sub-NDARPL721WTD_acq-64DIRECTIONSAP_dwi.bvec sub-NDARPL721WTD_acq-64DIRECTIONSAP_dwi.bval \
 -eddy_options " --repol "
 
+#http://community.mrtrix.org/t/mrtrix-3-0-release-candidate-2/1065/6
+##2
+mrdegibbs
+
+##
+dwibiascorrect -ants
 ####################################
 list=$1
 threads=6
